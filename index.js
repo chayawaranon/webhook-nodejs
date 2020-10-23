@@ -78,4 +78,4 @@ app.post('/',express.json() ,(req,res) =>{
     agent.handleRequest(intentMap);
 });
 
-app.listen(3333, ()=> console.log("Live port 3333"));
+app.listen(process.env.PORT || 3333, ()=> console.log("Live port 3333"));
