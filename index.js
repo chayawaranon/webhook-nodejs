@@ -19,26 +19,27 @@ app.post('/',express.json() ,(req,res) =>{
         response: res
     });
 
-    function bodyMassIndex(agent) {
-        let weight = req.body.queryResult.parameters.weight;
-        let height = req.body.queryResult.parameters.height / 100;
-        console.log('w = ' + weight);
-        console.log('h = ' + height);
-        let bmi = (weight / (height * height)).toFixed(2);
-        let result = 'ขออภัย ไม่เข้าใจค่ะ';
-    
-        if (bmi < 18.5) {
-            result = 'ผอมเกินไปนะ กินข้าวเยอะ ๆ';
-        } else if (bmi >= 18.5 && bmi <= 22.9) {
-            result = 'หุ่นดีจังเลยค่ะ';
-        } else if (bmi >= 23 && bmi <= 24.9) {
-            result = 'เริ่มท้วมแล้วนะคะ';
-        } else if (bmi >= 25 && bmi <= 29.9) {
-            result = 'อ้วนละน้าา';
-        } else if (bmi > 30) {
-            result = 'อ้วนเกินไปแล้วว ออกกำลังกายเยอะ ๆ นะจ๊ะ';
-        }
-            agent.add(result);
+    function topList(agent) {
+        let get_date = agent.parameters.get_date;
+        let temp = new Date;
+        let day = new Date(`${temp.getFullYear()}-${get_date}`);  
+        let result = {
+            song: []
+        };
+
+        return axios.get(`https://sheetdb.io/api/v1/swyrcvta772ks?sheet=${day.getWeek(day)}`)
+          .then( response => {
+            for(let i = 1 ; i <= 5 ; i++) {
+                result.song.push(`${i}. เพลง: ${response.data[i].song_list} ศิลปิน: ${response.data[i].artist}`);
+            }
+            //console.log(result);
+            
+            agent.add(JSON.stringify(result.song.join("")));
+        })
+        .catch(err => {
+            //agent.add("มีอะไรบางอย่างผิดพลาด กรุณาลองอีกครั้งค่ะ");
+            agent.add(err);
+        });
     }
 
     function searchSong(agent) {
@@ -72,8 +73,8 @@ app.post('/',express.json() ,(req,res) =>{
     }
 
     let intentMap = new Map();
-    intentMap.set('BMI - ask weight and height - yes', bodyMassIndex);
     intentMap.set('search song - add date', searchSong);
+    intentMap.set('top 10 song - date', topList);
 
     agent.handleRequest(intentMap);
 });
