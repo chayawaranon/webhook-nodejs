@@ -34,7 +34,7 @@ app.post('/',express.json() ,(req,res) =>{
             }
             //console.log(result);
             
-            agent.add(JSON.stringify(result.song.join("")));
+            agent.add(`${result.song[0]} \n ${result.song[1]} \n ${result.song[2]} \n ${result.song[3]} \n ${result.song[4]} \n`);
         })
         .catch(err => {
             //agent.add("มีอะไรบางอย่างผิดพลาด กรุณาลองอีกครั้งค่ะ");
