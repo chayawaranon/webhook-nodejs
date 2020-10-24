@@ -5,8 +5,8 @@ const { response } = require('express');
 const axios = require('axios');
 
 Date.prototype.getWeek = function(x) {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return `${this.getFullYear()}-${Math.ceil((((x - onejan) / 86400000) + onejan.getDay()+1)/7)}`;
+    var onejan = new Date(2020, 0, 1);
+    return `${this.getFullYear()}-${Math.ceil((((x - onejan) / 86400000))/7)}`;
 };
 
 app.get('/', (req, res) => {
@@ -23,16 +23,22 @@ app.post('/',express.json() ,(req,res) =>{
         let get_number_list = req.body.queryResult.parameters.get_number_list;
         let get_date = agent.parameters.get_date;
         let temp = new Date;
-        let day = new Date(`${temp.getFullYear()}-${get_date}`);  
+        let day = new Date(`2020-${get_date}`);  
         let result =  [];
-
+        //console.log(day.getWeek(day));
         return axios.get(`https://sheetdb.io/api/v1/swyrcvta772ks?sheet=${day.getWeek(day)}`)
           .then( response => {
             result.push(`Top ${get_number_list} Billboard Hot 100 ประจำวันที่ ${temp.getFullYear()}-${get_date}`);
-            for(let i = 1 ; i <= get_number_list ; i++) {
-                result.push(`${i}. เพลง: ${response.data[i].song_list}\nศิลปิน: ${response.data[i].artist}`);
+
+            if(get_number_list > 100 || get_number_list < 1) {
+                agent.add("กรุณาใส่จำนวนเพลงระหว่าง 1 - 100 ค่ะ");
             }
-            agent.add(result.join("\n\n"));
+            else {
+                for(let i = 0 ; i < get_number_list ; i++) {
+                    result.push(`${i+1}. เพลง: ${response.data[i].song_list}\nศิลปิน: ${response.data[i].artist}`);
+                }
+                agent.add(result.join("\n\n"));
+            }
         })
         .catch(err => {
             agent.add("มีอะไรบางอย่างผิดพลาด กรุณาลองอีกครั้งค่ะ");
