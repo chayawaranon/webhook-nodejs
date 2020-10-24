@@ -20,6 +20,7 @@ app.post('/',express.json() ,(req,res) =>{
     });
 
     function topList(agent) {
+        let get_number_list = req.body.queryResult.parameters.get_number_list;
         let get_date = agent.parameters.get_date;
         let temp = new Date;
         let day = new Date(`${temp.getFullYear()}-${get_date}`);  
@@ -27,15 +28,15 @@ app.post('/',express.json() ,(req,res) =>{
 
         return axios.get(`https://sheetdb.io/api/v1/swyrcvta772ks?sheet=${day.getWeek(day)}`)
           .then( response => {
-            result.push(`Top 10 Billboard Hot 100 ประจำวันที่ ${temp.getFullYear()}-${get_date}`);
-            for(let i = 1 ; i <= 10 ; i++) {
-                result.push(`${i}. เพลง: ${response.data[i].song_list} ศิลปิน: ${response.data[i].artist}`);
+            result.push(`Top ${get_number_list} Billboard Hot 100 ประจำวันที่ ${temp.getFullYear()}-${get_date}`);
+            for(let i = 1 ; i <= get_number_list ; i++) {
+                result.push(`${i}. เพลง: ${response.data[i].song_list}\nศิลปิน: ${response.data[i].artist}`);
             }
             agent.add(result.join("\n\n"));
         })
         .catch(err => {
-            //agent.add("มีอะไรบางอย่างผิดพลาด กรุณาลองอีกครั้งค่ะ");
-            agent.add(err);
+            agent.add("มีอะไรบางอย่างผิดพลาด กรุณาลองอีกครั้งค่ะ");
+            //agent.add(err);
         });
     }
 
