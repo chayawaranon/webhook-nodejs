@@ -23,18 +23,15 @@ app.post('/',express.json() ,(req,res) =>{
         let get_date = agent.parameters.get_date;
         let temp = new Date;
         let day = new Date(`${temp.getFullYear()}-${get_date}`);  
-        let result = {
-            song: []
-        };
+        let result =  [];
 
         return axios.get(`https://sheetdb.io/api/v1/swyrcvta772ks?sheet=${day.getWeek(day)}`)
           .then( response => {
-            for(let i = 1 ; i <= 5 ; i++) {
-                result.song.push(`${i}. เพลง: ${response.data[i].song_list} ศิลปิน: ${response.data[i].artist}`);
+            result.push(`Top 10 Billboard Hot 100 ประจำวันที่ ${temp.getFullYear()}-${get_date}`);
+            for(let i = 1 ; i <= 10 ; i++) {
+                result.push(`${i}. เพลง: ${response.data[i].song_list} ศิลปิน: ${response.data[i].artist}`);
             }
-            //console.log(result);
-            
-            agent.add(`${result.song[0]} \n ${result.song[1]} \n ${result.song[2]} \n ${result.song[3]} \n ${result.song[4]} \n`);
+            agent.add(result.join("\n\n"));
         })
         .catch(err => {
             //agent.add("มีอะไรบางอย่างผิดพลาด กรุณาลองอีกครั้งค่ะ");
