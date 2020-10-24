@@ -51,7 +51,7 @@ app.post('/',express.json() ,(req,res) =>{
         let get_date = agent.parameters.get_date;
         let temp = new Date;
         //console.log(get_date);
-        let day = new Date(`${temp.getFullYear()}-${get_date}`);  
+        let day = new Date(`2020-${get_date}`);  
         let result = null;
         let count = 0;
         //console.log('weekyear = ' + weekNumber);
